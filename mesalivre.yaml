@@ -1,0 +1,997 @@
+openapi: 3.0.0
+info:
+  title: "Mesa Livre API"
+  description: "API para gerenciamento de restaurantes, mesas, reservas e avaliações"
+  version: "1.0.0"
+servers:
+  - url: "http://localhost/api/v1"
+    description: "Local development server"
+tags:
+  - name: "Auth"
+    description: "Autenticação de usuários"
+  - name: "Usuários"
+    description: "Operações relacionadas a usuários"
+  - name: "Restaurantes"
+    description: "Operações relacionadas a restaurantes"
+  - name: "Mesas"
+    description: "Operações relacionadas a mesas de restaurantes"
+  - name: "Reservas"
+    description: "Operações relacionadas a reservas"
+  - name: "Avaliações"
+    description: "Operações relacionadas a avaliações de restaurantes"
+
+paths:
+  /auth?action=registrar:
+    post:
+      tags:
+        - "Auth"
+      summary: "Registrar novo usuário"
+      description: "Registra um novo usuário com nome, email, senha e tipo de usuário."
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - nome
+                - email
+                - senha
+                - tipo_usuario
+              properties:
+                nome:
+                  type: string
+                  example: "Abrahao"
+                  description: "Nome completo do usuário"
+                email:
+                  type: string
+                  example: "abrahao@mail.com"
+                  description: "Email válido do usuário"
+                senha:
+                  type: string
+                  example: "shaman"
+                  description: "Senha do usuário"
+                tipo_usuario:
+                  type: string
+                  enum: ["admin", "restaurante", "cliente"]
+                  example: "admin"
+                  description: "Tipo do usuário, deve ser um dos valores listados"
+      responses:
+        '201':
+          description: "Usuário registrado com sucesso"
+        '400':
+          description: "Dados incompletos ou inválidos"
+        '409':
+          description: "Email já em uso"
+        '500':
+          description: "Erro ao registrar usuário"
+
+  /auth?action=login:
+    post:
+      tags:
+        - "Auth"
+      summary: "Login de usuário"
+      description: "Realiza o login do usuário com email e senha, retornando um token JWT."
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - senha
+              properties:
+                email:
+                  type: string
+                  example: "abrahao@mail.com"
+                  description: "Email do usuário"
+                senha:
+                  type: string
+                  example: "shaman"
+                  description: "Senha do usuário"
+      responses:
+        '200':
+          description: "Login realizado com sucesso"
+        '401':
+          description: "Credenciais inválidas"
+        '400':
+          description: "Dados incompletos"
+
+  /usuarios/perfil:
+    get:
+      tags:
+        - "Usuários"
+      summary: "Obter perfil do usuário autenticado"
+      description: "Retorna os dados do perfil do usuário autenticado via token JWT."
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: "Perfil obtido com sucesso"
+        '401':
+          description: "Não autorizado"
+        '404':
+          description: "Perfil não encontrado"
+    put:
+      tags:
+        - "Usuários"
+      summary: "Atualizar perfil do usuário autenticado"
+      description: "Atualiza nome e email do usuário autenticado."
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - nome
+                - email
+              properties:
+                nome:
+                  type: string
+                  example: "Abrahao Eneias"
+                  description: "Nome completo atualizado"
+                email:
+                  type: string
+                  example: "abrahao@mail.com"
+                  description: "Email atualizado"
+      responses:
+        '200':
+          description: "Perfil atualizado com sucesso"
+        '400':
+          description: "Dados incompletos"
+        '401':
+          description: "Não autorizado"
+        '500':
+          description: "Erro ao atualizar perfil"
+
+  /restaurantes:
+    get:
+      tags:
+        - "Restaurantes"
+      summary: "Listar restaurantes do usuário autenticado"
+      description: "Retorna a lista de restaurantes pertencentes ao usuário autenticado."
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: "Lista de restaurantes"
+        '401':
+          description: "Não autorizado"
+    post:
+      tags:
+        - "Restaurantes"
+      summary: "Criar novo restaurante"
+      description: "Cria um restaurante novo para o usuário autenticado."
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - nome
+                - endereco
+              properties:
+                nome:
+                  type: string
+                  example: "Restaurante Saboroso"
+                  description: "Nome do restaurante"
+                endereco:
+                  type: string
+                  example: "Rua das Flores, 123"
+                  description: "Endereço do restaurante"
+      responses:
+        '201':
+          description: "Restaurante criado com sucesso"
+        '400':
+          description: "Dados incompletos"
+        '401':
+          description: "Não autorizado"
+        '500':
+          description: "Erro ao criar restaurante"
+
+  /restaurantes/{id}:
+    get:
+      tags:
+        - "Restaurantes"
+      summary: "Obter detalhes de um restaurante"
+      description: "Retorna detalhes do restaurante pelo ID."
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: string
+          description: "ID do restaurante"
+      responses:
+        '200':
+          description: "Detalhes do restaurante"
+        '404':
+          description: "Restaurante não encontrado"
+    put:
+      tags:
+        - "Restaurantes"
+      summary: "Atualizar restaurante"
+      description: "Atualiza nome e endereço do restaurante."
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: string
+          description: "ID do restaurante"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - nome
+                - endereco
+              properties:
+                nome:
+                  type: string
+                  example: "Restaurante Saboroso"
+                endereco:
+                  type: string
+                  example: "Rua das Flores, 123"
+      responses:
+        '200':
+          description: "Restaurante atualizado com sucesso"
+        '400':
+          description: "Dados incompletos"
+        '401':
+          description: "Não autorizado"
+        '403':
+          description: "Permissão negada"
+        '500':
+          description: "Erro ao atualizar restaurante"
+    delete:
+      tags:
+        - "Restaurantes"
+      summary: "Deletar restaurante"
+      description: "Deleta o restaurante pelo ID."
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: string
+          description: "ID do restaurante"
+      responses:
+        '200':
+          description: "Restaurante deletado com sucesso"
+        '400':
+          description: "ID inválido"
+        '401':
+          description: "Não autorizado"
+        '403':
+          description: "Permissão negada"
+        '500':
+          description: "Erro ao deletar restaurante"
+
+  /restaurantes/{id}/mesas:
+    get:
+      tags:
+        - "Mesas"
+      summary: "Listar mesas de um restaurante"
+      description: "Retorna a lista de mesas de um restaurante específico."
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: string
+          description: "ID do restaurante"
+        - name: "page"
+          in: "query"
+          schema:
+            type: integer
+            default: 1
+          description: "Número da página para paginação"
+        - name: "limit"
+          in: "query"
+          schema:
+            type: integer
+            default: 10
+          description: "Quantidade de registros por página"
+        - name: "status"
+          in: "query"
+          schema:
+            type: string
+          description: "Filtrar mesas por status (ex: disponivel, ocupada)"
+      responses:
+        '200':
+          description: "Lista de mesas"
+        '400':
+          description: "ID do restaurante não especificado"
+    post:
+      tags:
+        - "Mesas"
+      summary: "Criar nova mesa para um restaurante"
+      description: "Cria uma nova mesa vinculada ao restaurante indicado."
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: string
+          description: "ID do restaurante"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - numero
+                - capacidade
+              properties:
+                numero:
+                  type: integer
+                  example: 12
+                  description: "Número identificador da mesa"
+                capacidade:
+                  type: integer
+                  example: 4
+                  description: "Capacidade máxima da mesa"
+                status:
+                  type: string
+                  example: "disponivel"
+                  description: "Status da mesa (opcional)"
+      responses:
+        '201':
+          description: "Mesa criada com sucesso"
+        '400':
+          description: "Dados incompletos"
+        '401':
+          description: "Não autorizado"
+        '403':
+          description: "Permissão negada"
+        '500':
+          description: "Erro ao criar mesa"
+
+  /restaurantes/{restauranteId}/mesas/{mesaId}:
+    get:
+      tags:
+        - "Mesas"
+      summary: "Obter detalhes de uma mesa"
+      description: "Retorna detalhes de uma mesa específica de um restaurante."
+      parameters:
+        - name: "restauranteId"
+          in: "path"
+          required: true
+          schema:
+            type: string
+          description: "ID do restaurante"
+        - name: "mesaId"
+          in: "path"
+          required: true
+          schema:
+            type: string
+          description: "ID da mesa"
+      responses:
+        '200':
+          description: "Detalhes da mesa"
+        '404':
+          description: "Mesa não encontrada"
+    put:
+      tags:
+        - "Mesas"
+      summary: "Atualizar mesa"
+      description: "Atualiza todos os dados da mesa especificada."
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: "restauranteId"
+          in: "path"
+          required: true
+          schema:
+            type: string
+          description: "ID do restaurante"
+        - name: "mesaId"
+          in: "path"
+          required: true
+          schema:
+            type: string
+          description: "ID da mesa"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - numero
+                - capacidade
+                - status
+              properties:
+                numero:
+                  type: integer
+                  example: 12
+                  description: "Número da mesa"
+                capacidade:
+                  type: integer
+                  example: 4
+                  description: "Capacidade máxima"
+                status:
+                  type: string
+                  example: "disponivel"
+                  description: "Status atual da mesa"
+      responses:
+        '200':
+          description: "Mesa atualizada com sucesso"
+        '400':
+          description: "Dados inválidos"
+        '401':
+          description: "Não autorizado"
+        '403':
+          description: "Permissão negada"
+        '500':
+          description: "Erro ao atualizar mesa"
+    patch:
+      tags:
+        - "Mesas"
+      summary: "Atualizar parcialmente uma mesa"
+      description: "Atualiza parcialmente os dados da mesa especificada."
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: "restauranteId"
+          in: "path"
+          required: true
+          schema:
+            type: string
+          description: "ID do restaurante"
+        - name: "mesaId"
+          in: "path"
+          required: true
+          schema:
+            type: string
+          description: "ID da mesa"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                numero:
+                  type: integer
+                  example: 12
+                capacidade:
+                  type: integer
+                  example: 4
+                status:
+                  type: string
+                  example: "disponivel"
+      responses:
+        '200':
+          description: "Mesa atualizada parcialmente com sucesso"
+        '400':
+          description: "Nenhum dado fornecido"
+        '401':
+          description: "Não autorizado"
+        '403':
+          description: "Permissão negada"
+        '500':
+          description: "Erro ao atualizar mesa"
+    delete:
+      tags:
+        - "Mesas"
+      summary: "Deletar mesa"
+      description: "Remove a mesa especificada do restaurante."
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: "restauranteId"
+          in: "path"
+          required: true
+          schema:
+            type: string
+          description: "ID do restaurante"
+        - name: "mesaId"
+          in: "path"
+          required: true
+          schema:
+            type: string
+          description: "ID da mesa"
+      responses:
+        '200':
+          description: "Mesa deletada com sucesso"
+        '401':
+          description: "Não autorizado"
+        '403':
+          description: "Permissão negada"
+        '500':
+          description: "Erro ao deletar mesa"
+
+  /reservas:
+    get:
+      tags:
+        - "Reservas"
+      summary: "Listar reservas"
+      description: "Retorna lista paginada de reservas com filtros opcionais."
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: "page"
+          in: "query"
+          schema:
+            type: integer
+            default: 1
+          description: "Número da página"
+        - name: "limit"
+          in: "query"
+          schema:
+            type: integer
+            default: 10
+          description: "Itens por página"
+        - name: "status"
+          in: "query"
+          schema:
+            type: string
+          description: "Filtrar por status da reserva"
+        - name: "restaurante_id"
+          in: "query"
+          schema:
+            type: string
+          description: "Filtrar por restaurante"
+        - name: "usuario_id"
+          in: "query"
+          schema:
+            type: string
+          description: "Filtrar por usuário"
+      responses:
+        '200':
+          description: "Lista de reservas"
+        '400':
+          description: "Parâmetros inválidos"
+        '401':
+          description: "Não autorizado"
+        '403':
+          description: "Permissão negada"
+    post:
+      tags:
+        - "Reservas"
+      summary: "Criar nova reserva"
+      description: "Cria uma nova reserva para uma mesa em um restaurante."
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - restaurante_id
+                - mesa_id
+                - horario
+                - horario_fim
+                - num_pessoas
+              properties:
+                restaurante_id:
+                  type: string
+                  example: "4788e858-bdfa-4646-9bd6-0bbdba50b367"
+                  description: "ID do restaurante"
+                mesa_id:
+                  type: string
+                  example: "123e4567-e89b-12d3-a456-426614174000"
+                  description: "ID da mesa"
+                horario:
+                  type: string
+                  format: date-time
+                  example: "2025-06-22T19:00:00Z"
+                  description: "Início da reserva (ISO 8601)"
+                horario_fim:
+                  type: string
+                  format: date-time
+                  example: "2025-06-22T21:00:00Z"
+                  description: "Fim da reserva (ISO 8601)"
+                num_pessoas:
+                  type: integer
+                  example: 4
+                  description: "Número de pessoas para a reserva"
+                observacoes:
+                  type: string
+                  example: "Mesa próxima à janela"
+                  description: "Observações opcionais"
+                status:
+                  type: string
+                  example: "confirmada"
+                  description: "Status da reserva (opcional)"
+                usuario_id:
+                  type: string
+                  example: "9b5b3c7e-1234-5678-abcd-987654321000"
+                  description: "ID do usuário que fez a reserva (geralmente extraído do token)"
+      responses:
+        '201':
+          description: "Reserva criada com sucesso"
+        '400':
+          description: "Dados incompletos ou inválidos"
+        '401':
+          description: "Não autorizado"
+        '403':
+          description: "Permissão negada"
+        '409':
+          description: "Conflito de horário"
+        '500':
+          description: "Erro ao criar reserva"
+
+  /reservas/{id}:
+    get:
+      tags:
+        - "Reservas"
+      summary: "Obter detalhes de uma reserva"
+      description: "Retorna detalhes da reserva pelo ID."
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: string
+          description: "ID da reserva"
+      responses:
+        '200':
+          description: "Detalhes da reserva"
+        '401':
+          description: "Não autorizado"
+        '403':
+          description: "Permissão negada"
+        '404':
+          description: "Reserva não encontrada"
+    put:
+      tags:
+        - "Reservas"
+      summary: "Atualizar reserva"
+      description: "Atualiza todos os dados da reserva especificada."
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: string
+          description: "ID da reserva"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - usuario_id
+                - restaurante_id
+                - mesa_id
+                - horario
+                - horario_fim
+                - num_pessoas
+                - status
+              properties:
+                usuario_id:
+                  type: string
+                  description: "ID do usuário"
+                restaurante_id:
+                  type: string
+                  description: "ID do restaurante"
+                mesa_id:
+                  type: string
+                  description: "ID da mesa"
+                horario:
+                  type: string
+                  format: date-time
+                  description: "Início da reserva"
+                horario_fim:
+                  type: string
+                  format: date-time
+                  description: "Fim da reserva"
+                num_pessoas:
+                  type: integer
+                  description: "Número de pessoas"
+                observacoes:
+                  type: string
+                  description: "Observações opcionais"
+                status:
+                  type: string
+                  description: "Status da reserva"
+      responses:
+        '200':
+          description: "Reserva atualizada com sucesso"
+        '400':
+          description: "Dados incompletos"
+        '401':
+          description: "Não autorizado"
+        '403':
+          description: "Permissão negada"
+        '404':
+          description: "Reserva não encontrada"
+        '409':
+          description: "Conflito de horário"
+        '500':
+          description: "Erro ao atualizar reserva"
+    patch:
+      tags:
+        - "Reservas"
+      summary: "Atualizar parcialmente uma reserva"
+      description: "Atualiza parcialmente os dados da reserva especificada."
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: string
+          description: "ID da reserva"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                usuario_id:
+                  type: string
+                restaurante_id:
+                  type: string
+                mesa_id:
+                  type: string
+                horario:
+                  type: string
+                  format: date-time
+                horario_fim:
+                  type: string
+                  format: date-time
+                num_pessoas:
+                  type: integer
+                observacoes:
+                  type: string
+                status:
+                  type: string
+      responses:
+        '200':
+          description: "Reserva atualizada parcialmente com sucesso"
+        '400':
+          description: "Nenhum dado fornecido"
+        '401':
+          description: "Não autorizado"
+        '403':
+          description: "Permissão negada"
+        '404':
+          description: "Reserva não encontrada"
+        '409':
+          description: "Conflito de horário"
+        '500':
+          description: "Erro ao atualizar reserva"
+    delete:
+      tags:
+        - "Reservas"
+      summary: "Deletar reserva"
+      description: "Remove a reserva especificada."
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: string
+          description: "ID da reserva"
+      responses:
+        '200':
+          description: "Reserva deletada com sucesso"
+        '401':
+          description: "Não autorizado"
+        '403':
+          description: "Permissão negada"
+        '404':
+          description: "Reserva não encontrada"
+        '500':
+          description: "Erro ao deletar reserva"
+
+  /restaurantes/{restauranteId}/avaliacoes:
+    get:
+      tags:
+        - "Avaliações"
+      summary: "Listar avaliações de um restaurante"
+      description: "Retorna lista paginada de avaliações do restaurante."
+      parameters:
+        - name: "restauranteId"
+          in: "path"
+          required: true
+          schema:
+            type: string
+          description: "ID do restaurante"
+        - name: "page"
+          in: "query"
+          schema:
+            type: integer
+            default: 1
+          description: "Número da página"
+        - name: "limit"
+          in: "query"
+          schema:
+            type: integer
+            default: 10
+          description: "Itens por página"
+      responses:
+        '200':
+          description: "Lista de avaliações"
+        '400':
+          description: "ID do restaurante não especificado"
+    post:
+      tags:
+        - "Avaliações"
+      summary: "Criar nova avaliação para um restaurante"
+      description: "Cria uma avaliação para o restaurante autenticado, apenas usuários clientes podem criar."
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: "restauranteId"
+          in: "path"
+          required: true
+          schema:
+            type: string
+          description: "ID do restaurante"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - nota
+              properties:
+                nota:
+                  type: integer
+                  minimum: 1
+                  maximum: 5
+                  example: 5
+                  description: "Nota da avaliação entre 1 e 5"
+                comentario:
+                  type: string
+                  example: "Excelente atendimento!"
+                  description: "Comentário opcional"
+      responses:
+        '201':
+          description: "Avaliação criada com sucesso"
+        '400':
+          description: "Dados incompletos ou nota inválida"
+        '401':
+          description: "Não autorizado"
+        '403':
+          description: "Apenas clientes podem criar avaliações"
+        '409':
+          description: "Usuário já avaliou este restaurante"
+        '500':
+          description: "Erro ao criar avaliação"
+
+  /restaurantes/{restauranteId}/avaliacoes/{avaliacaoId}:
+    get:
+      tags:
+        - "Avaliações"
+      summary: "Obter detalhes de uma avaliação"
+      description: "Retorna detalhes da avaliação especificada."
+      parameters:
+        - name: "restauranteId"
+          in: "path"
+          required: true
+          schema:
+            type: string
+          description: "ID do restaurante"
+        - name: "avaliacaoId"
+          in: "path"
+          required: true
+          schema:
+            type: string
+          description: "ID da avaliação"
+      responses:
+        '200':
+          description: "Detalhes da avaliação"
+        '404':
+          description: "Avaliação não encontrada"
+    put:
+      tags:
+        - "Avaliações"
+      summary: "Atualizar avaliação"
+      description: "Atualiza todos os dados da avaliação especificada."
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: "restauranteId"
+          in: "path"
+          required: true
+          schema:
+            type: string
+          description: "ID do restaurante"
+        - name: "avaliacaoId"
+          in: "path"
+          required: true
+          schema:
+            type: string
+          description: "ID da avaliação"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - nota
+              properties:
+                nota:
+                  type: integer
+                  minimum: 1
+                  maximum: 5
+                  description: "Nota da avaliação"
+                comentario:
+                  type: string
+                  description: "Comentário da avaliação"
+      responses:
+        '200':
+          description: "Avaliação atualizada com sucesso"
+        '400':
+          description: "Dados inválidos"
+        '401':
+          description: "Não autorizado"
+        '403':
+          description: "Permissão negada"
+        '404':
+          description: "Avaliação não encontrada"
+        '500':
+          description: "Erro ao atualizar avaliação"
+    delete:
+      tags:
+        - "Avaliações"
+      summary: "Deletar avaliação"
+      description: "Remove a avaliação especificada."
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: "restauranteId"
+          in: "path"
+          required: true
+          schema:
+            type: string
+          description: "ID do restaurante"
+        - name: "avaliacaoId"
+          in: "path"
+          required: true
+          schema:
+            type: string
+          description: "ID da avaliação"
+      responses:
+        '200':
+          description: "Avaliação deletada com sucesso"
+        '401':
+          description: "Não autorizado"
+        '403':
+          description: "Permissão negada"
+        '404':
+          description: "Avaliação não encontrada"
+        '500':
+          description: "Erro ao deletar avaliação"
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
