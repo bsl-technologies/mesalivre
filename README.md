@@ -27,11 +27,7 @@ Para configurar e rodar a API Mesa Livre, siga os passos abaixo:
 
 ### Configuração do Banco de Dados
 
-1.  **Importe o Esquema:** Importe o conteúdo do arquivo `mesalivre.sql` para o banco de dados `mesalivre` que você acabou de criar. Isso criará todas as tabelas e índices necessários.
-    ```bash
-    mysql -u [seu_usuario] -p mesalivre < mesalivre.sql
-    ```
-    Substitua `[seu_usuario]` pelo seu nome de usuário do MySQL. Você será solicitado a inserir sua senha.
+1.  **Importe o Esquema:** Usando o phpmyadmin, importe o conteúdo do arquivo `mesalivre.sql` para o banco de dados `mesalivre` que você acabou de criar. Isso criará todas as tabelas e índices necessários.
 
 ### Postman
 
