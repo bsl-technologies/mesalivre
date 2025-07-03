@@ -32,6 +32,11 @@ Para configurar e rodar a API Mesa Livre, siga os passos abaixo:
     ```
     Substitua `[seu_usuario]` pelo seu nome de usuário do MySQL. Você será solicitado a inserir sua senha.
 
+### Postman
+
+1. **Importe o arquivo mesalivre.yaml**
+2. **Ajuste o {{baseUrl}} conforme o seu endereco de IP do seu servidor**
+
 ## 🚀 Endpoints da API
 
 A API do Mesa Livre é organizada em torno de recursos RESTful, utilizando os seguintes grupos de endpoints:
