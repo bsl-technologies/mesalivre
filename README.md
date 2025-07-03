@@ -7,33 +7,29 @@ API para gerenciamento de restaurantes, mesas, reservas e avaliações.
 Para configurar e rodar a API Mesa Livre, siga os passos abaixo:
 
 ### Pré-requisitos
-* **Servidor de Banco de Dados:** É necessário ter um servidor MySQL ou MariaDB instalado e configurado.
-* **Ambiente de Desenvolvimento:** Dependendo da linguagem de backend utilizada (não especificada nos arquivos fornecidos), você pode precisar de Node.js, PHP, Python, Java, etc. Certifique-se de que seu ambiente de desenvolvimento esteja pronto.
+1. php 8+
+2. MySQL
+3. phpmyadmin
+
+
+### Configuração da API
+
+1.  **Clonar o Repositório:**
+    ```bash
+    git clone git@github.com:bsl-technologies/mesalivre.git
+    cd mesalivre
+    ```
+2. **Execute a aplicacao:** ```bash
+                            php -S localhost:8000
+                            ```
 
 ### Configuração do Banco de Dados
 
-1.  **Crie o Banco de Dados:** Crie um banco de dados vazio chamado `mesalivre` no seu servidor MySQL/MariaDB.
-    ```sql
-    CREATE DATABASE IF NOT EXISTS `mesalivre` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-    USE `mesalivre`;
-    ```
-2.  **Importe o Esquema:** Importe o conteúdo do arquivo `mesalivre.sql` para o banco de dados `mesalivre` que você acabou de criar. Isso criará todas as tabelas e índices necessários.
+1.  **Importe o Esquema:** Importe o conteúdo do arquivo `mesalivre.sql` para o banco de dados `mesalivre` que você acabou de criar. Isso criará todas as tabelas e índices necessários.
     ```bash
     mysql -u [seu_usuario] -p mesalivre < mesalivre.sql
     ```
     Substitua `[seu_usuario]` pelo seu nome de usuário do MySQL. Você será solicitado a inserir sua senha.
-
-### Configuração da API
-
-1.  **Clonar o Repositório:** Se o código da API estiver em um repositório Git, clone-o para sua máquina local:
-    ```bash
-    git clone [URL_DO_REPOSITORIO]
-    cd [nome_do_diretorio_do_projeto]
-    ```
-    (Assumindo que este README.md é parte do projeto Mesa Livre, o usuário precisaria do URL do repositório real aqui)
-2.  **Instalar Dependências:** Instale as dependências do projeto. Este passo varia de acordo com a linguagem e o gerenciador de pacotes (ex: `npm install` para Node.js, `composer install` para PHP, `pip install -r requirements.txt` para Python).
-3.  **Configurar Variáveis de Ambiente:** Configure as variáveis de ambiente necessárias, como credenciais do banco de dados, chaves secretas para JWT, etc. Geralmente, isso é feito através de um arquivo `.env` ou configurações específicas do framework.
-4.  **Iniciar a Aplicação:** Inicie a aplicação da API. O comando para iniciar também dependerá da tecnologia utilizada (ex: `npm start`, `php artisan serve`, `python app.py`).
 
 ## 🚀 Endpoints da API
 
