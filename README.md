@@ -7,7 +7,7 @@ API para gerenciamento de restaurantes, mesas, reservas e avaliações.
 Para configurar e rodar a API Mesa Livre, siga os passos abaixo:
 
 ### Pré-requisitos
-1. php 8+
+1. PHP 8+
 2. MySQL
 3. phpmyadmin
 
