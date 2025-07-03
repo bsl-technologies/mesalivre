@@ -22,6 +22,9 @@ Para configurar e rodar a API Mesa Livre, siga os passos abaixo:
     ```
 2. **Execute a API:**
     ```bash
+    cd api/v1/
+    ```
+    ```bash
     php -S localhost:8000
     ```
 
