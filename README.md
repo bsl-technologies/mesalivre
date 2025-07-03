@@ -19,9 +19,10 @@ Para configurar e rodar a API Mesa Livre, siga os passos abaixo:
     git clone git@github.com:bsl-technologies/mesalivre.git
     cd mesalivre
     ```
-2. **Execute a aplicacao:** ```bash
-                            php -S localhost:8000
-                            ```
+2. **Execute a API:**
+    ```bash
+    php -S localhost:8000
+    ```
 
 ### Configuração do Banco de Dados
 
