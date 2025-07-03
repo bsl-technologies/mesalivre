@@ -10,6 +10,7 @@ Para configurar e rodar a API Mesa Livre, siga os passos abaixo:
 1. PHP 8+
 2. MySQL
 3. phpmyadmin
+4. Postman
 
 
 ### Configuração da API
